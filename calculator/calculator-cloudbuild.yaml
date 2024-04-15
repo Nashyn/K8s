@@ -1,0 +1,34 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    id: BUILD-IMAGE-DOCKER
+    args:
+      - 'build'
+      - '-t'
+      - 'us-central1-docker.pkg.dev/csci-5409-w24/calculator-docker/calculator'
+      - './calculator'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    id: PUSH-IMAGE-DOCKER
+    args:
+      - 'push'
+      - 'us-central1-docker.pkg.dev/csci-5409-w24/calculator-docker/calculator'
+
+  - name: 'gcr.io/cloud-builders/kubectl'
+    id: DEPLOY-KUBERNETES-CLUSTER
+    env:
+      - 'CLOUDSDK_CONTAINER_CLUSTER=kubernetes-cluster'
+      - 'CLOUDSDK_COMPUTE_ZONE=us-central1-c'
+    args:
+      - 'apply'
+      - '-f'
+      - './calculator/calculator-deploy.yaml'
+
+  - name: 'gcr.io/cloud-builders/kubectl'
+    id: CREATE-NETWORK-SERVICE
+    env:
+      - 'CLOUDSDK_CONTAINER_CLUSTER=kubernetes-cluster'
+      - 'CLOUDSDK_COMPUTE_ZONE=us-central1-c'
+    args:
+      - 'apply'
+      - '-f'
+      - './calculator/calculator-network-service.yaml'

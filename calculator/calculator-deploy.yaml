@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: pod-calculation-deployment
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pod-label-calculation-deployment
+
+  template:
+    metadata:
+      labels:
+        app: pod-label-calculation-deployment
+
+    spec:
+      containers:
+      - name: calculator
+        image: "us-central1-docker.pkg.dev/csci-5409-w24/calculator-docker/calculator"
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 6000
+        volumeMounts:
+          - name: pod-label-storage-volume
+            mountPath: /nisarg_PV_dir
+
+      volumes:
+      - name: pod-label-storage-volume
+        persistentVolumeClaim:
+          claimName: pod-label-volume-claim
